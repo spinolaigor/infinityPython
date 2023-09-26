@@ -1,0 +1,5 @@
+a =input('digite algo: ')
+print('O tipo primimito desse valor é', type(a))
+print('Só tem espaços?', a.isspace())
+print('É um numero?', a.isnumeric())
+print('É alfabético?', a.isalnum())

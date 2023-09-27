@@ -1,0 +1,102 @@
+import tkinter as tk
+from tkinter import ttk
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Configurar as credenciais do serviço
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+credentials = ServiceAccountCredentials.from_json_keyfile_name('sua-credencial.json', scope)
+client = gspread.authorize(credentials)
+
+# Abrir a planilha pelo seu ID ou URL
+spreadsheet = client.open_by_key('ID_DA_PLANILHA')
+# Ou
+# spreadsheet = client.open_by_url('URL_DA_PLANILHA')
+
+# Selecionar a guia (folha) onde você deseja enviar os dados
+worksheet = spreadsheet.get_worksheet(0)  # Use o índice da guia ou o nome
+
+def salvar_recapeamento():
+    tipo_logradouro = tipo_logradouro_var.get()
+    logradouro = logradouro_entry.get()
+    bairro = bairro_entry.get()
+    regional = regional_var.get()
+    inicio_obra = inicio_obra_entry.get()
+    fim_obra = fim_obra_entry.get()
+    data = data_entry.get()
+    metragem = metragem_entry.get()
+
+    # Coletar os dados dos campos da interface
+
+    # Criar uma lista com os dados
+    data_to_insert = [tipo_logradouro, logradouro, bairro, regional, inicio_obra, fim_obra, data, metragem]
+
+    # Inserir os dados na planilha
+    worksheet.append_row(data_to_insert)
+
+    # Exemplo de impressão dos dados
+    print("Tipo de Logradouro:", tipo_logradouro)
+    print("Logradouro:", logradouro)
+    print("Bairro:", bairro)
+    print("Regional:", regional)
+    print("Início da obra:", inicio_obra)
+    print("Fim da obra:", fim_obra)
+    print("Data:", data)
+    print("Metragem:", metragem)
+
+root = tk.Tk()
+root.title("Cadastro de Recapeamento - SUDECAP")
+
+# Estilo para ttk
+style = ttk.Style()
+style.configure('TButton', font=('Arial', 12), foreground='black', background='#006600')  # Texto preto e fundo verde SUDECAP
+style.configure('TLabel', font=('Arial', 12), foreground='#003366')  # Azul SUDECAP
+style.configure('TEntry', font=('Arial', 12), foreground='black', relief="solid", padding=(5, 5))  # Espaçamento interno e borda sólida
+
+# Labels e entradas para cada campo
+tk.Label(root, text="Tipo de Logradouro:", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=0, column=0, padx=10, pady=5)
+tipos_logradouro = ["Rua", "Viela", "Avenida", "Praça", "Beco"]
+tipo_logradouro_var = tk.StringVar()
+tipo_logradouro_combobox = ttk.Combobox(root, textvariable=tipo_logradouro_var, values=tipos_logradouro, state="readonly")
+tipo_logradouro_combobox.grid(row=0, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Logradouro:", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=1, column=0, padx=10, pady=5)
+logradouro_entry = ttk.Entry(root)
+logradouro_entry.grid(row=1, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Bairro:", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=2, column=0, padx=10, pady=5)
+bairro_entry = ttk.Entry(root)
+bairro_entry.grid(row=2, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Regional:", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=3, column=0, padx=10, pady=5)
+regionais = ["B", "VN", "CS", "L", "N", "NE", "NO", "O", "P"]
+regional_var = tk.StringVar()
+regional_combobox = ttk.Combobox(root, textvariable=regional_var, values=regionais, state="readonly")
+regional_combobox.grid(row=3, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Início da Obra:", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=4, column=0, padx=10, pady=5)
+inicio_obra_entry = ttk.Entry(root)
+inicio_obra_entry.grid(row=4, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Fim da Obra:", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=5, column=0, padx=10, pady=5)
+fim_obra_entry = ttk.Entry(root)
+fim_obra_entry.grid(row=5, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Data:", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=6, column=0, padx=10, pady=5)
+data_entry = ttk.Entry(root)
+data_entry.grid(row=6, column=1, padx=10, pady=5)
+
+tk.Label(root, text="Metragem (Largura x Comprimento):", font=('Arial', 12, 'bold'), foreground='#003366').grid(row=7, column=0, padx=10, pady=5)
+metragem_entry = ttk.Entry(root)
+metragem_entry.grid(row=7, column=1, padx=10, pady=5)
+
+# Botão para salvar o recapeamento
+salvar_button = ttk.Button(root, text="Salvar", style='TButton', command=salvar_recapeamento)
+salvar_button.grid(row=8, column=0, columnspan=2, padx=10, pady=10)
+
+# Tornar a janela responsiva
+root.grid_columnconfigure(1, weight=1)  # Coluna 1 (entradas) expande com a janela
+root.grid_rowconfigure(9, weight=1)  # Espaço em branco na parte inferior se expande com a janela
+
+# Iniciar a aplicação
+root.mainloop()
